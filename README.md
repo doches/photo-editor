@@ -1,3 +1,5 @@
+> This is a fork of [eventtus/photo-editor](https://github.com/eventtus/photo-editor) that exposes a custom line drawing width. It's _totally unsupported_, so you probably want the real repo, not this one!
+
 # iOS Photo Editor
 
 ## Features
