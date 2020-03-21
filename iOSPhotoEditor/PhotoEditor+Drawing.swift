@@ -66,7 +66,7 @@ extension PhotoEditorViewController {
             context.addLine(to: CGPoint(x: toPoint.x, y: toPoint.y))
             // 3
             context.setLineCap( CGLineCap.round)
-            context.setLineWidth(lineDrawWidth)
+            context.setLineWidth(CGFloat(lineDrawWidth))
             context.setStrokeColor(drawColor.cgColor)
             context.setBlendMode( CGBlendMode.normal)
             // 4
