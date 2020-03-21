@@ -54,6 +54,8 @@ public final class PhotoEditorViewController: UIViewController {
     
     // list of controls to be hidden
     public var hiddenControls : [control] = []
+
+    public var lineDrawWidth: Float = 15.0;
     
     var stickersVCIsVisible = false
     var drawColor: UIColor = UIColor.black
