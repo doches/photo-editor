@@ -46,23 +46,23 @@ public final class PhotoEditorViewController: UIViewController {
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var clearButton: UIButton!
     
-    public var image: UIImage?
+    public var image: UIImage!
     /**
      Array of Stickers -UIImage- that the user will choose from
      */
-    public var stickers : [UIImage] = []
+    public var stickers : [UIImage]! = []
     /**
      Array of Colors that will show while drawing or typing
      */
-    public var colors  : [UIColor] = []
+    public var colors  : [UIColor]! = []
     
-    public var photoEditorDelegate: PhotoEditorDelegate?
+    public var photoEditorDelegate: PhotoEditorDelegate!
     var colorsCollectionViewDelegate: ColorsCollectionViewDelegate!
     
     // list of controls to be hidden
-    public var hiddenControls : [control] = []
+    public var hiddenControls : [control]! = []
 
-    public var lineDrawWidth: Float = 15.0
+    public var lineDrawWidth: NSNumber! = 15.0
     var scaledLineDrawWidth: Float = 15.0
     
     var stickersVCIsVisible = false
@@ -93,7 +93,7 @@ public final class PhotoEditorViewController: UIViewController {
         
         scrollView.contentSize = image!.size
         
-        scaledLineDrawWidth = lineDrawWidth
+        scaledLineDrawWidth = Float(truncating: lineDrawWidth)
         
         deleteView.layer.cornerRadius = deleteView.bounds.height / 2
         deleteView.layer.borderWidth = 2.0
@@ -135,7 +135,7 @@ public final class PhotoEditorViewController: UIViewController {
     }
     
     func updateLineWidth() {
-        scaledLineDrawWidth = lineDrawWidth / Float(scrollView.zoomScale)
+        scaledLineDrawWidth = Float(lineDrawWidth) / Float(scrollView.zoomScale)
     }
     
     func configureCollectionView() {
