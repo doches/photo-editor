@@ -117,25 +117,10 @@ extension PhotoEditorViewController {
     }
     
     func hideControls() {
-        for control in hiddenControls {
-            switch control {
-                
-            case .clear:
-                clearButton.isHidden = true
-            case .crop:
-                cropButton.isHidden = true
-            case .draw:
-                drawButton.isHidden = true
-            case .save:
-                saveButton.isHidden = true
-            case .share:
-                shareButton.isHidden = true
-            case .sticker:
-                stickerButton.isHidden = true
-            case .text:
-                stickerButton.isHidden = true
-            }
-        }
+        cropButton.isHidden = true
+        saveButton.isHidden = true
+        shareButton.isHidden = true
+        stickerButton.isHidden = true
+        textButton.isHidden = true
     }
-    
 }
