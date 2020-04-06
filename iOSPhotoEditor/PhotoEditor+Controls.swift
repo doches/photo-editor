@@ -42,6 +42,7 @@ extension PhotoEditorViewController {
     }
 
     @IBAction func drawButtonTapped(_ sender: Any) {
+        setScrollViewEnabled(enabled: false)
         isDrawing = true
         canvasImageView.isUserInteractionEnabled = false
         doneButton.isHidden = false
@@ -77,6 +78,7 @@ extension PhotoEditorViewController {
         canvasImageView.isUserInteractionEnabled = true
         hideToolbar(hide: false)
         isDrawing = false
+        setScrollViewEnabled(enabled: true)
     }
     
     //MARK: Bottom Toolbar

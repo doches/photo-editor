@@ -14,9 +14,16 @@ public final class PhotoEditorViewController: UIViewController {
     @IBOutlet weak var canvasView: UIView!
     //To hold the image
     @IBOutlet var imageView: UIImageView!
-    @IBOutlet weak var imageViewHeightConstraint: NSLayoutConstraint!
     //To hold the drawings and stickers
     @IBOutlet weak var canvasImageView: UIImageView!
+    // (tfountain) To hold the containing scrollview
+    @IBOutlet weak var scrollView: UIScrollView!
+    // (tfountain) Constraints for zooming the image
+    @IBOutlet weak var innerView: UIView!
+    @IBOutlet weak var innerViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var innerViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var innerViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var innerViewTrailingConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var topToolbar: UIView!
     @IBOutlet weak var bottomToolbar: UIView!
@@ -55,7 +62,8 @@ public final class PhotoEditorViewController: UIViewController {
     // list of controls to be hidden
     public var hiddenControls : [control] = []
 
-    public var lineDrawWidth: Float = 15.0;
+    public var lineDrawWidth: Float = 15.0
+    var scaledLineDrawWidth: Float = 15.0
     
     var stickersVCIsVisible = false
     var drawColor: UIColor = UIColor.black
@@ -71,7 +79,6 @@ public final class PhotoEditorViewController: UIViewController {
     var imageViewToPan: UIImageView?
     var isTyping: Bool = false
     
-    
     var stickersViewController: StickersViewController!
 
     //Register Custom font before we load XIB
@@ -83,6 +90,10 @@ public final class PhotoEditorViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         self.setImageView(image: image!)
+        
+        scrollView.contentSize = image!.size
+        
+        scaledLineDrawWidth = lineDrawWidth
         
         deleteView.layer.cornerRadius = deleteView.bounds.height / 2
         deleteView.layer.borderWidth = 2.0
@@ -107,6 +118,26 @@ public final class PhotoEditorViewController: UIViewController {
         hideControls()
     }
     
+    override public func viewWillLayoutSubviews() {
+      super.viewWillLayoutSubviews()
+      updateMinZoomScaleForSize(view.bounds.size)
+    }
+    
+    func updateMinZoomScaleForSize(_ size: CGSize) {
+      let widthScale = size.width / innerView.bounds.width
+      let heightScale = size.height / innerView.bounds.height
+      let minScale = min(widthScale, heightScale)
+        
+      scrollView.minimumZoomScale = minScale
+      scrollView.zoomScale = minScale
+      
+      updateLineWidth()
+    }
+    
+    func updateLineWidth() {
+        scaledLineDrawWidth = lineDrawWidth / Float(scrollView.zoomScale)
+    }
+    
     func configureCollectionView() {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 30, height: 30)
@@ -128,9 +159,12 @@ public final class PhotoEditorViewController: UIViewController {
     }
     
     func setImageView(image: UIImage) {
+//        let size = image.suitableSize(widthLimit: UIScreen.main.bounds.width * 2)
         imageView.image = image
-        let size = image.suitableSize(widthLimit: UIScreen.main.bounds.width)
-        imageViewHeightConstraint.constant = (size?.height)!
+        imageView.bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        canvasImageView.bounds = imageView.bounds
+        innerView.bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+//        imageViewHeightConstraint.constant = (size?.height)!
     }
     
     func hideToolbar(hide: Bool) {
@@ -138,6 +172,10 @@ public final class PhotoEditorViewController: UIViewController {
         topGradient.isHidden = hide
         bottomToolbar.isHidden = hide
         bottomGradient.isHidden = hide
+    }
+
+    public func setScrollViewEnabled(enabled: Bool) {
+        scrollView.isUserInteractionEnabled = enabled
     }
 }
 
@@ -152,7 +190,26 @@ extension PhotoEditorViewController: ColorDelegate {
     }
 }
 
-
-
-
-
+extension PhotoEditorViewController: UIScrollViewDelegate {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    return innerView
+  }
+    
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+      updateConstraintsForSize(innerView.bounds.size)
+        
+      updateLineWidth()
+    }
+    
+    func updateConstraintsForSize(_ size: CGSize) {
+      let yOffset = max(0, (size.height - imageView.frame.height) / 2)
+      innerViewTopConstraint.constant = yOffset
+      innerViewBottomConstraint.constant = yOffset
+      
+      let xOffset = max(0, (size.width - imageView.frame.width) / 2)
+      innerViewLeadingConstraint.constant = xOffset
+      innerViewTrailingConstraint.constant = xOffset
+        
+      view.layoutIfNeeded()
+    }
+}
