@@ -118,9 +118,21 @@ public final class PhotoEditorViewController: UIViewController {
         hideControls()
     }
     
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        // Save the contentOffset before we transition so we can
+        // restore it afterwards. This is going to give us weird,
+        // non-platform-generic behaviour on rotation.
+        let offset = scrollView.contentOffset
+        let zoom = scrollView.zoomScale
+        coordinator.animate(alongsideTransition: { (context) in
+            self.scrollView.contentOffset = offset;
+            self.scrollView.zoomScale = zoom;
+        }, completion: nil)
+    }
+    
     override public func viewWillLayoutSubviews() {
       super.viewWillLayoutSubviews()
-      updateMinZoomScaleForSize(view.bounds.size)
+//      updateMinZoomScaleForSize(view.bounds.size)
     }
     
     func updateMinZoomScaleForSize(_ size: CGSize) {
@@ -159,12 +171,13 @@ public final class PhotoEditorViewController: UIViewController {
     }
     
     func setImageView(image: UIImage) {
-//        let size = image.suitableSize(widthLimit: UIScreen.main.bounds.width * 2)
         imageView.image = image
         imageView.bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         canvasImageView.bounds = imageView.bounds
         innerView.bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
-//        imageViewHeightConstraint.constant = (size?.height)!
+        
+        // Set a sane zoom scale on image load
+        updateMinZoomScaleForSize(view.bounds.size)
     }
     
     func hideToolbar(hide: Bool) {
@@ -196,20 +209,6 @@ extension PhotoEditorViewController: UIScrollViewDelegate {
   }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-      updateConstraintsForSize(innerView.bounds.size)
-        
       updateLineWidth()
-    }
-    
-    func updateConstraintsForSize(_ size: CGSize) {
-      let yOffset = max(0, (size.height - imageView.frame.height) / 2)
-      innerViewTopConstraint.constant = yOffset
-      innerViewBottomConstraint.constant = yOffset
-      
-      let xOffset = max(0, (size.width - imageView.frame.width) / 2)
-      innerViewLeadingConstraint.constant = xOffset
-      innerViewTrailingConstraint.constant = xOffset
-        
-      view.layoutIfNeeded()
     }
 }

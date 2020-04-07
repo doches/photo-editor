@@ -32,13 +32,10 @@ extension PhotoEditorViewController {
     override public func touchesMoved(_ touches: Set<UITouch>,
                                       with event: UIEvent?){
         if isDrawing {
-            // 6
             swiped = true
             if let touch = touches.first {
                 let currentPoint = touch.location(in: canvasImageView)
                 drawLineFrom(lastPoint, toPoint: currentPoint)
-                
-                // 7
                 lastPoint = currentPoint
             }
         }
@@ -56,22 +53,17 @@ extension PhotoEditorViewController {
     }
     
     func drawLineFrom(_ fromPoint: CGPoint, toPoint: CGPoint) {
-        // 1
         let canvasSize = canvasImageView.frame.integral.size
         UIGraphicsBeginImageContextWithOptions(canvasSize, false, 0)
         if let context = UIGraphicsGetCurrentContext() {
             canvasImageView.image?.draw(in: CGRect(x: 0, y: 0, width: canvasSize.width, height: canvasSize.height))
-            // 2
             context.move(to: CGPoint(x: fromPoint.x, y: fromPoint.y))
             context.addLine(to: CGPoint(x: toPoint.x, y: toPoint.y))
-            // 3
             context.setLineCap( CGLineCap.round)
             context.setLineWidth(CGFloat(scaledLineDrawWidth))
             context.setStrokeColor(drawColor.cgColor)
             context.setBlendMode( CGBlendMode.normal)
-            // 4
             context.strokePath()
-            // 5
             canvasImageView.image = UIGraphicsGetImageFromCurrentImageContext()
         }
         UIGraphicsEndImageContext()
