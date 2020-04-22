@@ -103,6 +103,7 @@ extension PhotoEditorViewController {
     }
     
     @IBAction func continueButtonPressed(_ sender: Any) {
+        self.scrollView.zoomScale = self.scrollView.minimumZoomScale
         let img = self.canvasView.toImage()
         photoEditorDelegate?.doneEditing(image: img)
         self.dismiss(animated: true, completion: nil)
@@ -117,7 +118,7 @@ extension PhotoEditorViewController {
     }
     
     func hideControls() {
-        cropButton.isHidden = true
+        cropButton.isHidden = false
         saveButton.isHidden = true
         shareButton.isHidden = true
         stickerButton.isHidden = true

@@ -133,12 +133,14 @@ public final class PhotoEditorViewController: UIViewController {
     
     override public func viewWillLayoutSubviews() {
       super.viewWillLayoutSubviews()
-//      updateMinZoomScaleForSize(view.bounds.size)
+//      updateMinZoomScaleForSize()
     }
     
-    func updateMinZoomScaleForSize(_ size: CGSize) {
-      let widthScale = size.width / innerView.bounds.width
-      let heightScale = size.height / innerView.bounds.height
+    func updateMinZoomScaleForSize() {
+        let inner = innerView.bounds
+        let scroll = scrollView.bounds.size
+      let widthScale = (scroll.width - 40) / inner.width
+        let heightScale = (scroll.height - 40) / inner.height
       let minScale = min(widthScale, heightScale)
         
       scrollView.minimumZoomScale = minScale
@@ -178,7 +180,10 @@ public final class PhotoEditorViewController: UIViewController {
         innerView.bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
         
         // Set a sane zoom scale on image load
-        updateMinZoomScaleForSize(view.bounds.size)
+        updateMinZoomScaleForSize()
+        
+        // Start drawing immediately
+//        self.drawButtonTapped(self)
     }
     
     func hideToolbar(hide: Bool) {
